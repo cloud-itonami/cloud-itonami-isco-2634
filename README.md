@@ -62,15 +62,15 @@ human-in-the-loop interrupt/resume via checkpointing.
                                            +-> :hold               (:hard? true)
 ```
 
-- `src/psychology/store.cljc` — `Store` protocol + `MemStore`:
+- `src/psychology/store.kotoba` — `Store` protocol + `MemStore`:
   registered clients, committed records, an append-only audit ledger.
-- `src/psychology/advisor.cljc` — `Advisor` protocol; `mock-advisor`
+- `src/psychology/advisor.kotoba` — `Advisor` protocol; `mock-advisor`
   (deterministic, default) proposes a practice operation from a
   request; `llm-advisor` wraps a `langchain.model/ChatModel` — either
   way the advisor only ever produces a `:propose`-effect proposal,
   never a committed record, and LLM parse failures always yield
   `confidence 0.0` (forces escalation, never fabricated confidence).
-- `src/psychology/governor.cljc` — `PsychologyGovernor/check`: a pure
+- `src/psychology/governor.kotoba` — `PsychologyGovernor/check`: a pure
   function, wired as its own `:govern` node. Hard invariants
   (unregistered client, a proposal whose `:effect` isn't `:propose`)
   always route to `:hold`. Escalation invariants
@@ -80,7 +80,7 @@ human-in-the-loop interrupt/resume via checkpointing.
   on explicit human approval (`actor/approve!`), matching the README's
   robotics-premise statement that crisis-risk disclosures and
   involuntary-hold recommendations always require human sign-off.
-- `src/psychology/actor.cljc` — `build-graph`, `run-request!`,
+- `src/psychology/actor.kotoba` — `build-graph`, `run-request!`,
   `approve!`: the `langgraph.graph/state-graph` wiring itself.
 
 ```bash
