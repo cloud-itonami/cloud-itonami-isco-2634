@@ -1,0 +1,33 @@
+;; What this vertical's robot physically does, declared for
+;; kotoba.robotics.process (kotoba-lang/robotics). `kbb -M:physics` runs it.
+;;
+;; README "Robotics premise": a scheduling and intake-support robot performs
+;; waiting-room check-in and intake-form assistance for psychologists
+;; (ISCO 2634). Its physical work is handing an intake tablet/clipboard to a
+;; seated client and escorting the client from the waiting room to the
+;; consultation room at walking pace.
+;;
+;; Every number without a cited source is marked `estimate` in its :basis.
+;; Replacing an estimate with a sourced value is this bot's growth work.
+{:physics/schema "itonami.physical-ai.spec.v1"
+ :repo "cloud-itonami/cloud-itonami-isco-2634"
+ :cases
+ [{:id :hand-intake-tablet
+   :kind :manipulator
+   :procedure "arm lifts an intake tablet or clipboard from the reception dock and holds it out to a seated client"
+   :params {:l1-m 0.40 :l2-m 0.35 :m1-kg 3.0 :m2-kg 2.0
+            :from [0.35 0.05] :to [0.55 0.40] :duration-s 3.0 :steps 500}
+   :sweep {:param :payload-kg :values [0.3 0.6 1.0 1.5 2.5]}
+   :quantity :peak-tau1-nm
+   :limit {:max 25.0 :basis "estimate: continuous shoulder torque of a small service-robot arm (~3 kg payload class) sized for handing objects to people"}
+   :boundary {:lo 0.1 :hi 15.0}}
+  {:id :escort-to-consult-room
+   :kind :transport
+   :procedure "robot escorts a client at walking pace from the waiting room to the consultation room"
+   :params {:mass-kg 35.0 :payload-kg 2.0 :distance-m 25.0 :a-max-mps2 0.3
+            :brake-decel-mps2 0.5 :drive-force-n 80.0 :crr 0.015
+            :cog-height-m 0.60 :support-half-length-m 0.22}
+   :sweep {:param :v-max-mps :values [0.4 0.5 0.7 0.9 1.1]}
+   :boundary {:lo 0.2 :hi 1.2}
+   :quantity :cycle-time-s
+   :limit {:max 40.0 :basis "estimate: a 25 m hallway escort should not take much longer than an adult's slow walk (~0.7 m/s) plus starting and stopping"}}]}
